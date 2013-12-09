@@ -9,10 +9,11 @@ without actually sending emails.
 
 Set up your sender email in `config.py`.
 
+Make sure your JSON is valid.
+
 Assumptions
 -----
 + names specified are unique and consistent
 + there exists at least one possible cycle, i.e. you don't overconstrain 
 the blacklists; if no cycles are possible, the algorithm is dumb and runs
 forever
-+ your JSON is valid
