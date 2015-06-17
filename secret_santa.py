@@ -14,30 +14,25 @@ import datetime
 
 
 ### for generating pairings
-# global people
-
-def person(name):
-    return filter(lambda p:name==p['name'], people)[0]
-
-def randName(people_set):
-    return people_set[random.randint(0,len(people_set)-1)]['name']
 
 def generateChain():
-    '''Generate a single cycle of people. The algorithm is dumb, so if there
-       are no possible cycles it probably recurses until stack overflow.'''
-    chain = [randName(people)]
-    while len(chain) < len(people):
+    '''
+    Generate a single cycle of people. The logic is really dumb, so if
+    there are no possible cycles it probably recurses until stack overflow.
+    '''
+    chain = [random.choice(people.values())['name']]
+    while len(chain) < len(people.values()):
         giver = chain[-1]
-        eligible = filter(
-            lambda p: giver not in p.get('dont_receive',[]) and \
+        eligible = map(lambda p: p['name'],
+            filter(lambda p: giver not in p.get('block', []) and \
                 giver != p['name'] and \
                 p['name'] not in chain,
-            people)
+            people.values()))
         if not eligible:
             return generateChain()  # lazy, start over
-        chain.append(randName(eligible))
+        chain.append(random.choice(eligible))
     # make sure last and first person are compatible
-    if chain[-1] in person(chain[0]).get('dont_receive',[]):
+    if chain[-1] in people[chain[0]].get('block', []):
         return generateChain()
     return chain
 
@@ -49,7 +44,7 @@ def send_mail(to, subject, body):
     msg['To'] = to
     msg['From'] = config.SENDER
     msg.attach(MIMEText(body, 'html'))
-    
+
     server = smtplib.SMTP(config.SMTP)
     server.starttls()
     server.login(config.SENDER, config.PASSWORD)
@@ -69,7 +64,7 @@ def email_assignment(giver, recipient):
     message = message.format(
         giver['name'], recipient['name'],
         recipient.get('roommates', ''),
-        recipient['address']
+        recipient.get('address', '')
         )
     send_mail(giver['email'], "Secret Santa assignment", message)
 
@@ -77,25 +72,35 @@ def email_assignment(giver, recipient):
 
 if __name__ == "__main__":
     parser = OptionParser(usage = "usage: %prog [options] <input>")
-    parser.add_option("-f", "--fake",
+    parser.add_option("--fake",
                       dest="fake", default=False, action="store_true",
-                      help="Do a fake run -- generate a cycle without actually sending emails.")
+                      help=("Do a fake run -- generate a cycle without "
+                            "actually sending emails."))
     (options, args) = parser.parse_args()
 
     if len(args)==0:
         raise Exception("No input provided; please specify a valid JSON file.")
 
-    # read people JSON
+    # load people info
     f = open(args[0],'r')
     global people
     people = simplejson.loads(f.read())
+    for name, person in people.iteritems():
+      people[name]['name'] = name
+
+    # make blacklisting bidirectional
+    for name, person in people.iteritems():
+      for blockee_name in person.get('block', []):
+        if blockee_name in people:
+          people[blockee_name]['block'] = (
+            people[blockee_name].get('block', []) + [name])
 
     # email each member of chain
     chain = generateChain()
     for i,giver_name in enumerate(chain):
         recipient_name = chain[(i+1)%len(chain)]
         if not options.fake:
-            email_assignment(person(giver_name), person(recipient_name))
+            email_assignment(people['giver_name'], people['recipient_name'])
+            print 'Sending email %d' % i
     if options.fake:
         print chain
-

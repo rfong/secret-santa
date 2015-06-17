@@ -1,29 +1,28 @@
-[
-  { "name": "Alyssa",
+{
+  "Alyssa": {
     "email": "alyssaphacker@somemaildomain.com",
     "roommates": "Cathy, Dave",
     "address": "32 Vassar St, Cambridge"
   },
-  { "name": "Ben",
+  "Ben": {
     "email": "benbitdiddle@asdfghjkl.com",
     "roommates": "Eeyore",
     "address": "77 Massachusetts Ave, Cambridge"
   },
-  { "name": "Cathy",
+  "Cathy": {
     "email": "csharpe@somemaildomain.com",
-    "dont_receive": ["Dave"],
+    "block": ["Dave"],
     "roommates": "Alyssa, Dave",
     "address": "32 Vassar St, Cambridge"
   },
-  { "name": "Dave",
+  "Dave": {
     "email": "dave@emailemailemailemail.com",
-    "dont_receive": ["Cathy"],
     "roommates": "Alyssa, Cathy",
     "address": "32 Vassar St, Cambridge"
   },
-  { "name": "Eeyore",
+  "Eeyore": {
     "email": "eeyore@hundredacrewo.od",
     "roommates": "Ben",
     "address": "77 Massachusetts Ave, Cambridge"
   }
-]
+}

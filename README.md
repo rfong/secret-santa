@@ -4,12 +4,22 @@ Randomly generate a single cycle through a specified group of people, and
 automatically send out assignment emails so that you, the organizer, can 
 retain the joy of surprise upon discovering your own Secret Santa.
 
-Run `python secret_santa.py -f sample_people.json` to generate a sample cycle
-without actually sending emails.
+"Features"
+-----
++ pairwise blacklisting option to spice things up (because it's less fun for
+people to get assigned to their significant others or some other player's
+relative they've never met)
++ list player addresses & roommates so secret santas can collaborate with each
+other to hide presents in each others' houses
 
+What to do
+-----
 Set up your sender email in `config.py`.
 
-Make sure your JSON is valid.
+Run `python secret_santa.py --fake sample_people.json` to generate a sample
+cycle without actually sending emails.
+
+Write valid JSON.
 
 Assumptions
 -----
